@@ -44,7 +44,12 @@ Copy one transcript row at a time. **Close** or **Escape** dismisses the popover
 
 Unpacked extensions do not update automatically from GitHub.
 
-Download **sodp-issue-reporter-extension.zip** from the [latest release](https://github.com/stanford-ddl/sodp-issue-reporter-extension/releases/latest) and unzip the new version. Replace the files in the same installed folder, then click **Reload** on the extension’s card at `chrome://extensions`. Refresh any open visualization tabs afterward. Keeping the same installed folder helps preserve the extension’s identity and saved settings.
+1. Download **sodp-issue-reporter-extension.zip** from the [latest release](https://github.com/stanford-ddl/sodp-issue-reporter-extension/releases/latest), unzip it into a new folder, and keep that folder somewhere permanent.
+2. Open `chrome://extensions`, find **SODP Issue Reporter**, click **Remove**, and confirm.
+3. With **Developer mode** on, click **Load unpacked** and select the new folder containing `manifest.json`.
+4. Refresh any open Stanford Deliberate visualization tabs.
+
+You may need to enter your reporter name again after reinstalling. Keep the new folder in place while the extension is installed.
 
 ## Privacy and permissions
 
