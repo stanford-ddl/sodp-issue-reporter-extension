@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "SODP Issue Reporter",
   "description": "Copy a transcript issue as spreadsheet columns A\u2013H, without sending data to a server.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "permissions": [
     "storage",
     "clipboardWrite"
