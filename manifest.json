@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "SODP Issue Reporter",
+  "description": "Copy a transcript issue as spreadsheet columns A\u2013H, without sending data to a server.",
+  "version": "0.3.0",
+  "permissions": [
+    "storage",
+    "clipboardWrite"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://stanforddeliberate.org/admin/rooms/*/viz*"
+      ],
+      "js": [
+        "clipboard.js",
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "SODP Issue Reporter",
+    "default_popup": "popup.html"
+  }
+}

@@ -1,0 +1,9 @@
+.env
+playwright-report/
+test-results/
+node_modules/
+
+.DS_Store
+__pycache__/
+tests/smoke-preview.png
+dist/
