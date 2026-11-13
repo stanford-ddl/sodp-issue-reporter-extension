@@ -20,8 +20,11 @@ with sync_playwright() as p, tempfile.TemporaryDirectory(prefix='ddl-viz-test-')
     page=context.new_page(); errors=[]; page.on('pageerror',lambda e: errors.append(str(e)))
     page.goto(URL); page.locator('#one').click(); panel=page.locator('.ddl-report-toolbar'); panel.wait_for()
     page.get_by_role('button',name='Copy A–H',exact=True).click(); assert 'Add your name' in panel.inner_text()
+    copy_anchor=panel.bounding_box()
     panel.locator('[name=helperName]').fill('Test Reporter'); page.get_by_role('button',name='Copy A–H',exact=True).click()
     page.get_by_text('Copied A–H. Paste into column A of the sheet.',exact=True).wait_for()
+    copied_bounds=panel.bounding_box()
+    assert abs(copied_bounds['x']-copy_anchor['x'])<1 and abs(copied_bounds['y']-copy_anchor['y'])<1, (copy_anchor,copied_bounds)
     text=page.evaluate('navigator.clipboard.readText()'); cols=columns(text)
     assert len(cols)==8 and cols[0]==URL and cols[1]=='Test Reporter' and cols[3]=='' and cols[4]=='Alice' and cols[5]=='00:01' and cols[6]=='Hello "team". link text' and cols[7]=='https://stanforddeliberate.org/demo-en-a',cols
     # Real paste event from native clipboard into an ordinary browser textarea.

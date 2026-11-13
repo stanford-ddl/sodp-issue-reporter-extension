@@ -36,6 +36,8 @@ Chrome lists the extension as **SODP Issue Reporter**.
 
 Column G defaults to `[Transcript Missing]` or `[Audio Corrupted]` when that marker is present; otherwise it uses the transcript text. Clearing the field leaves G blank. Selecting a different row resets both G and hearability to that row’s defaults.
 
+The popover stays anchored while you edit, change hearability, or copy. If its contents outgrow the available space, scroll inside it. It follows the selected row when the page scrolls and stays within the viewport when the window resizes.
+
 Copy one transcript row at a time. **Close** or **Escape** dismisses the popover. Links and ordinary text selection remain available. If the visualization page includes a room slug such as `(/demo-en-a)`, a **Live room** button appears in the **upper-right of the viz page**. Clicking it opens that room’s page in a new tab. The button stays hidden if no room slug is found. The button and column H use the same explicit `(/room-slug)` in the visualization page’s first `h3` heading. If the heading contains no valid slug or conflicting slugs, H stays blank and the button is hidden. The extension does not search transcript/body text, guess from the numeric room ID, or check a lookup sheet. It constructs the room URL on the same website; it does not verify that the destination exists. Hover over the button to check its URL before opening it.
 
 ## Update
@@ -75,8 +77,10 @@ node --check popup.js
 node --test tests/clipboard.test.cjs
 ```
 
-`tests/browser_smoke.py` requires Python, Playwright, and a compatible Chromium installation. Run it with your configured Python environment. Set `CHROMIUM_EXECUTABLE` to an existing Chrome for Testing binary if Playwright’s default browser is unavailable.
+`tests/browser_smoke.py` and `tests/positioning_smoke.py` require Python, Playwright, and a compatible Chromium installation. Run them with your configured Python environment. Set `CHROMIUM_EXECUTABLE` to an existing Chrome for Testing binary if Playwright’s default browser is unavailable.
 
 The browser test loads the real unpacked extension in a disposable profile and intercepts page requests with synthetic transcript HTML. It covers native clipboard writing and pasting, editable G, optional hearability, successive row selection, reporter-name persistence, TSV safety, and basic UI behavior. It does not access an actual room or spreadsheet. The test uses the system clipboard and overwrites its current contents with synthetic test data.
+
+`tests/positioning_smoke.py` checks that repeated Other changes, textarea resizing, internal scrolling, and validation keep the popover in place. It also covers page scrolling, window resizing, short/narrow viewports, and closing/reopening or selecting a new row. It uses synthetic pages and does not touch the clipboard.
 
 The earlier A–G clipboard workflow has also been manually tested on the live platform. The new column H is covered by fixture tests and still needs a live check. Automated tests use fixtures, so recheck the live page after platform or extension changes.

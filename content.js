@@ -4,6 +4,7 @@ const REPORTABLE_ROW_SELECTOR = "table.transcript tbody tr";
 const HEARABILITY_OPTIONS = ["Fine", "Badly", "Nothing", "Unsure", "Other"];
 let currentTarget = null;
 let toolbar = null;
+let toolbarAnchor = null;
 let helperName = "";
 let settingsReady = false;
 chrome.storage.sync.get("settings").then(({ settings = {} }) => {
@@ -37,7 +38,11 @@ document.addEventListener("click", (event) => {
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") hideToolbar();
 });
-document.addEventListener("scroll", repositionToolbar, true);
+document.addEventListener("scroll", (event) => {
+  // Editing/scrolling our own panel must never move its viewport anchor.
+  if (toolbar?.contains(event.target)) return;
+  repositionToolbar();
+}, true);
 window.addEventListener("resize", repositionToolbar);
 
 function showToolbar() {
@@ -60,7 +65,6 @@ function showToolbar() {
   toolbar.querySelector(".ddl-close").addEventListener("click", hideToolbar);
   toolbar.querySelector('[name="hearability"]').addEventListener("change", () => {
     toolbar.querySelector(".ddl-other").hidden = toolbar.querySelector('[name="hearability"]').value !== "Other";
-    repositionToolbar();
   });
   toolbar.querySelector(".ddl-copy").addEventListener("click", copySelectedRow);
   document.documentElement.append(toolbar);
@@ -71,10 +75,26 @@ function repositionToolbar() {
   if (!currentTarget || !toolbar) return;
   if (!currentTarget.isConnected) { hideToolbar(); return; }
   const rect = currentTarget.getBoundingClientRect();
-  const beside = rect.right + toolbar.offsetWidth + 16 <= window.innerWidth;
-  toolbar.style.left = `${beside ? rect.right + 8 : Math.max(8, Math.min(window.innerWidth - toolbar.offsetWidth - 8, rect.right - toolbar.offsetWidth))}px`;
-  const above = rect.top - toolbar.offsetHeight - 8;
-  toolbar.style.top = `${Math.max(8, Math.min(window.innerHeight - toolbar.offsetHeight - 8, beside ? rect.top : (above >= 8 ? above : rect.bottom + 8)))}px`;
+  const margin = 8;
+  if (!toolbarAnchor) {
+    // Choose a side once per row. Content height changes must not flip sides,
+    // reclamp the top, or move the controls out from under the pointer.
+    const width = toolbar.offsetWidth;
+    const height = toolbar.offsetHeight;
+    const beside = rect.right + width + margin * 2 <= window.innerWidth;
+    const left = beside ? rect.right + margin : Math.max(margin, Math.min(window.innerWidth - width - margin, rect.right - width));
+    const above = rect.top - height - margin;
+    const top = Math.max(margin, Math.min(window.innerHeight - height - margin, beside ? rect.top : (above >= margin ? above : rect.bottom + margin)));
+    toolbarAnchor = { leftOffset: left - rect.right, topOffset: top - rect.top, height };
+  }
+  // Follow the row on page/ancestor scroll, but retain the original placement.
+  // Use the opening height, not changing form content, to clamp the anchor.
+  const left = Math.max(margin, Math.min(window.innerWidth - toolbar.offsetWidth - margin, rect.right + toolbarAnchor.leftOffset));
+  const top = Math.max(margin, Math.min(window.innerHeight - toolbarAnchor.height - margin, rect.top + toolbarAnchor.topOffset));
+  toolbar.style.left = `${left}px`;
+  toolbar.style.top = `${top}px`;
+  // Grow down from the stable top. Scroll inside the panel when space runs out.
+  toolbar.style.maxHeight = `${Math.max(0, window.innerHeight - top - margin)}px`;
 }
 
 function hideToolbar() {
@@ -82,6 +102,7 @@ function hideToolbar() {
   currentTarget = null;
   toolbar?.remove();
   toolbar = null;
+  toolbarAnchor = null;
 }
 
 async function copySelectedRow() {
