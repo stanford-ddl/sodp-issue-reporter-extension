@@ -2,7 +2,7 @@
 
 A small Chrome extension for reporting transcript issues from Stanford Deliberate visualization pages. Select a transcript row, optionally add hearability or edit the error message, then copy a spreadsheet-ready row.
 
-No LLM, backend, or automatic spreadsheet submission. This version works on admin visualization pages, not live-room video grids.
+Works on admin visualization pages. Copy each report, then paste it into your reporting sheet.
 
 ## Install
 
@@ -38,7 +38,7 @@ Column G defaults to `[Transcript Missing]` or `[Audio Corrupted]` when that mar
 
 The popover stays anchored while you edit, change hearability, or copy. If its contents outgrow the available space, scroll inside it. It follows the selected row when the page scrolls and stays within the viewport when the window resizes.
 
-Copy one transcript row at a time. **Close** or **Escape** dismisses the popover. Links and ordinary text selection remain available. If the visualization page includes a room slug such as `(/demo-en-a)`, a **Live room** button appears in the **upper-right of the viz page**. Clicking it opens that room’s page in a new tab. The button stays hidden if no room slug is found. The button and column H use the same explicit `(/room-slug)` in the visualization page’s first `h3` heading. If the heading contains no valid slug or conflicting slugs, H stays blank and the button is hidden. The extension does not search transcript/body text, guess from the numeric room ID, or check a lookup sheet. It constructs the room URL on the same website; it does not verify that the destination exists. Hover over the button to check its URL before opening it.
+Copy one transcript row at a time. **Close** or **Escape** dismisses the popover. Links and ordinary text selection remain available. If the visualization page includes a room slug such as `(/demo-en-a)`, a **Live room** button appears in the **upper-right of the viz page**. Clicking it opens that room’s page in a new tab. The button stays hidden if no room slug is found. The button and column H use the room address shown in the page heading. If that address is missing or ambiguous, column H stays blank and the button stays hidden. Hover over the button to check the address before opening it; the destination may be unavailable.
 
 ## Update
 
